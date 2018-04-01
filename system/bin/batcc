@@ -327,7 +327,7 @@ while [ 1 ]; do
 		echo -e "${W}Voltage stock:${N} ${G}${val}v${N}"
 		vm=$(cat $VM); convert $vm
 		echo -e "${W}Voltage max charge:${N} ${G}${val}v${N}"
-		echo ""
+		echo "$div"
 		echo ""
 		[ -f $QC ] && {
 			[ $(cat "$QC") == "0" ] &&  QCstat="${W}Q)${N}"
@@ -336,10 +336,11 @@ while [ 1 ]; do
 			echo -e "$QCstat ${W}QuickCharge enable/disable${N}"
 		}
 		[ -f $VM ] && {
-			[ $AV -eq 1 ] && [ $MV -eq 0 ] && { MCVstat="${R}M)${N}"; ACVstat="${G}A)${N}"; AMCstat=""}
-			[ $AV -eq 0 ] && [ $MV -eq 1 ] && { MCVstat="${G}M)${N}"; ACVstat="${R}A)${N}"; AMCstat="${G}$amc%${N}"}
+			[ $AV -eq 1 ] && [ $MV -eq 0 ] && { MCVstat="${R}M)${N}"; ACVstat="${G}A)${N}"; AMCstat=""; }
+			[ $AV -eq 0 ] && [ $MV -eq 1 ] && { MCVstat="${G}M)${N}"; ACVstat="${R}A)${N}"; AMCstat="${G}$amc%${N}"; }
 			echo -e "$MCVstat ${W}Manual charging voltage${N}"
 			echo -e "$ACVstat ${W}Automatic charging voltage${N} $AMCstat"
+		}
 		[ $T -eq 1 ] && {
 			[ $method = "H" ] && DelCstat="${G}${hour}:${minutes}${N}"
 			[ $method = "P" ] && DelCstat="${G}${percentage}%${N}"
@@ -353,11 +354,11 @@ while [ 1 ]; do
 			echo -e "$LOGCATstat ${W}Logcat enabled/disabled${N}"
 		}
 		echo "e) Exit"
-		echo ""
-		echo ""
-		echo -n "\n[CHOICE]: "
+		echo "\nHit enter to start the process after choosing the options" 
+		echo -n "[CHOICE]: "
 		unset character
-		read -r -s -n1 -t 1 character
+		#read -r -s -n1 -t 1 character
+		read character
 		case $character in
 			q|Q)
 				if [ `cat $QC` -eq 0 ]; then
@@ -720,10 +721,10 @@ while [ 1 ]; do
 				exit 1
 			;;
 		esac
-		if [ $T -eq 1 ]; then
-			if [ $(date +%k%M) -eq $TR ]; then
+		if [ "$T" -eq 1 ]; then
+			if [ $(date +%k%M) -eq "$TR" ]; then
 				echo 1 > $BCE; echo 1 > $CE
-			elif [ $(cat $Capacity) -le $P ]; then
+			elif [ $(cat $Capacity) -le "$P" ]; then
 				echo 1 > $BCE; echo 1 > $CE
 			fi
 		fi
@@ -894,7 +895,7 @@ while [ 1 ]; do
 				fi;
 			fi;
 		fi
-		if [ $(cat $Capacity) -eq $amc ]; then
+		if [ "$(cat $Capacity)" == "$amc" ]; then
 			echo ""
 			echo ""
 			echo -e "${W}Completed!${N}"
